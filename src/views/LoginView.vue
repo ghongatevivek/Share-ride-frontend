@@ -27,7 +27,7 @@
 
                 <div class="bg-gray-50 px-4 py-3 text-right sm:px-6">
                     <button @submit.prevent="handleVerification" type="submit" class="inline-flex justify-center items-center px-4 py-2 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-black hover:bg-gray-700 focus:outline-none focus:border-gray-700 focus:ring focus:ring-gray-300 focus:ring-opacity-50 transition ease-in-out duration-150">
-                        Verigy 
+                        Verify 
                     </button>
                 </div>
             </div>
@@ -37,11 +37,11 @@
 
 <script setup>
     import {vMaska} from 'Maska'
-    import { ref, reactive, onMounted } from 'vue';
+    import { ref, reactive, onMounted, computed  } from 'vue';
     import axios from 'axios'
-    import { useRoute } from 'vue-router';
+    import { useRouter } from 'vue-router';
 
-    const router = useRoute()
+    const router = useRouter()
 
     const formData = reactive({
         mobile : null
@@ -56,14 +56,15 @@
         }
     })
 
-    const formattedFormData = computer (() => {
+    const getFormattedFormData = () => {
         return {
             mobile : formData.mobile.replaceAll(' ', '').replace('-','').replace('-',''),
             login_code : formData.login_code
         }
-    })
+    }
+
     const handleLogin = () => {
-        axios.post('http://127.0.0.1:8000/api/login', formattedFormData)
+        axios.post('http://127.0.0.1:8000/api/login', getFormattedFormData())
             .then((response) => {
                 console.log(response.data);
                 waitingOnVerification.value = true
@@ -75,7 +76,7 @@
     }
 
     const handleVerification = () => {
-        axios.post('http://127.0.0.1:8000/api/login/verify', formattedFormData)
+        axios.post('http://127.0.0.1:8000/api/login/verify', getFormattedFormData())
             .then((response) => {
                 console.log(response.data); // auth token
                 localStorage.setItem('token', response.data)
